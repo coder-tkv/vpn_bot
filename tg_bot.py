@@ -6,29 +6,16 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+
+import logger_config
 from time_declination_funcs import time_left
-import logging
 
 import InlineKeyboards
 import MarzbanController
 
 
 # Настройка логгера
-log_format = "%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s"
-formatter = logging.Formatter(log_format)
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.propagate = False
-
-file_handler = logging.FileHandler("py_log.log", mode="w", encoding="utf-8")
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-
+root_logger = logger_config.setup_logger()
 
 BOT_TOKEN = os.getenv('TG_TOKEN')
 dp = Dispatcher()
@@ -184,7 +171,7 @@ async def main():
     global controller
     token = await MarzbanController.api.get_token(username=os.getenv('MARZBAN_USERNAME'), password=os.getenv('MARZBAN_PASSWORD'))
     controller = MarzbanController.Controller(token)
-    logger.info('Бот начал работу')
+    root_logger.info('Бот начал работу')
     await dp.start_polling(bot)
 
 

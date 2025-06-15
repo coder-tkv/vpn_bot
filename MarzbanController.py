@@ -6,23 +6,6 @@ from datetime import datetime, timedelta
 import logging
 
 
-# Настройка логгера
-log_format = "%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s"
-formatter = logging.Formatter(log_format)
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.propagate = False
-
-file_handler = logging.FileHandler("py_log.log", mode="w", encoding="utf-8")
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-
-
 # API
 api = MarzbanAPI(base_url=os.getenv('MARZBAN_HOST'))
 
@@ -30,6 +13,7 @@ api = MarzbanAPI(base_url=os.getenv('MARZBAN_HOST'))
 class Controller:
     def __init__(self, token):
         self.logger = logging.getLogger(__name__)
+        self.logger.info(f"MarzbanController начал работу")
         self.token = token
 
     @staticmethod
@@ -44,7 +28,7 @@ class Controller:
             expire=self.expire_timestamp(datetime.now() + timedelta(days=expire))
         )
         try:
-            added_user = await api.add_user(user=new_user,
+            await api.add_user(user=new_user,
                                             token=self.token.access_token)
             self.logger.info(f"Добавлен пользователь: {name}")
             return True

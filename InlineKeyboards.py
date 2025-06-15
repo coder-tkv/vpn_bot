@@ -12,7 +12,7 @@ def start():
 def back():
     return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data='start')]])
 
-def tap_to_connect():
+def to_connect():
     connect_buttons_list = [
         [
             InlineKeyboardButton(text="Скачать Android", callback_data='download_android'),
@@ -27,3 +27,42 @@ def tap_to_connect():
         ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=connect_buttons_list)
+
+def expired():
+    expired_buttons_list = [
+        [InlineKeyboardButton(text="Купить", callback_data='buy')],
+        [InlineKeyboardButton(text="Назад", callback_data='start')]]
+    return InlineKeyboardMarkup(inline_keyboard=expired_buttons_list)
+
+
+def buy():
+    buy_buttons_list = [
+        [InlineKeyboardButton(text="1 месяц", callback_data='one_month')],
+        [InlineKeyboardButton(text="3 месяца", callback_data='three_months')],
+        [InlineKeyboardButton(text="6 месяцев", callback_data='six_months')],
+        [InlineKeyboardButton(text="Назад", callback_data='start')]]
+    return InlineKeyboardMarkup(inline_keyboard=buy_buttons_list)
+
+
+def one_month():
+    one_month_buttons_list = [
+        [InlineKeyboardButton(text="Оплатить", callback_data='123')],
+        [InlineKeyboardButton(text="Криптой", callback_data='123')],
+        [InlineKeyboardButton(text="Назад", callback_data='buy')]]
+    return InlineKeyboardMarkup(inline_keyboard=one_month_buttons_list)
+
+
+def three_months():
+    three_months_buttons_list = [
+        [InlineKeyboardButton(text="Оплатить", callback_data='123')],
+        [InlineKeyboardButton(text="Криптой", callback_data='123')],
+        [InlineKeyboardButton(text="Назад", callback_data='buy')]]
+    return InlineKeyboardMarkup(inline_keyboard=three_months_buttons_list)
+
+
+def six_months():
+    six_months_buttons_list = [
+        [InlineKeyboardButton(text="Оплатить", callback_data='123')],
+        [InlineKeyboardButton(text="Криптой", callback_data='123')],
+        [InlineKeyboardButton(text="Назад", callback_data='buy')]]
+    return InlineKeyboardMarkup(inline_keyboard=six_months_buttons_list)

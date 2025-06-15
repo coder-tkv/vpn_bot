@@ -6,12 +6,32 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from time_declination_funcs import time_left
+import logging
+
 import InlineKeyboards
 import MarzbanController
 
+
+# Настройка логгера
+log_format = "%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s"
+formatter = logging.Formatter(log_format)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.propagate = False
+
+file_handler = logging.FileHandler("py_log.log", mode="w", encoding="utf-8")
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+
 BOT_TOKEN = os.getenv('TG_TOKEN')
 dp = Dispatcher()
-controller = None
 
 @dp.message(CommandStart())
 async def command_start_handler(message: Message, state: FSMContext) -> None:
@@ -42,37 +62,129 @@ async def start_edited(callback: CallbackQuery, state: FSMContext):
 async def status(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
-    msg = await callback.bot.edit_message_text(
-        chat_id=callback.from_user.id,
-        message_id=message_id,
-        text='status',
-        parse_mode='HTML',
-        reply_markup=InlineKeyboards.back()
-    )
-    await state.update_data(message_id=msg.message_id)
+    expire = await controller.get_expire(str(callback.from_user.id))
+    text = time_left(expire)
+    if expire > 0 or expire is True:
+        msg = await callback.bot.edit_message_text(
+            chat_id=callback.from_user.id,
+            message_id=message_id,
+            text=text,
+            parse_mode='HTML',
+            reply_markup=InlineKeyboards.back()
+        )
+        await state.update_data(message_id=msg.message_id)
+    else:
+        msg = await callback.bot.edit_message_text(
+            chat_id=callback.from_user.id,
+            message_id=message_id,
+            text=text,
+            parse_mode='HTML',
+            reply_markup=InlineKeyboards.expired()
+        )
+        await state.update_data(message_id=msg.message_id)
+
 
 @dp.callback_query(lambda F: F.data == 'connect')
 async def connect(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
     if await controller.add_user(str(callback.from_user.id), 3):
-        data = await state.get_data()
-        message_id = data.get('message_id')
         msg = await callback.bot.edit_message_text(
             chat_id=callback.from_user.id,
             message_id=message_id,
             text='Вы активировали пробный период - 3 дня, внимание на кнопки ниже',
             parse_mode='HTML',
-            reply_markup=InlineKeyboards.tap_to_connect()
+            reply_markup=InlineKeyboards.to_connect()
         )
         await state.update_data(message_id=msg.message_id)
     else:
-        # добавить функцию получения времени
-        pass
+        expire = await controller.get_expire(str(callback.from_user.id))
+        text = time_left(expire)
+        msg = await callback.bot.edit_message_text(
+            chat_id=callback.from_user.id,
+            message_id=message_id,
+            text=text,
+            parse_mode='HTML',
+            reply_markup=InlineKeyboards.to_connect() if expire > 0 else InlineKeyboards.expired()
+        )
+        await state.update_data(message_id=msg.message_id)
+
+
+@dp.callback_query(lambda F: F.data == 'buy')
+async def buy(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
+    msg = await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=message_id,
+        text='Менюшка покупки',
+        parse_mode='HTML',
+        reply_markup=InlineKeyboards.buy()
+    )
+    await state.update_data(message_id=msg.message_id)
+
+
+@dp.callback_query(lambda F: F.data == 'one_month')
+async def one_month(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
+    msg = await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=message_id,
+        text='Подписка - 1 месяц',
+        parse_mode='HTML',
+        reply_markup=InlineKeyboards.one_month()
+    )
+    await state.update_data(message_id=msg.message_id)
+
+
+@dp.callback_query(lambda F: F.data == 'three_months')
+async def three_months(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
+    msg = await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=message_id,
+        text='Подписка - 3 месяца',
+        parse_mode='HTML',
+        reply_markup=InlineKeyboards.three_months()
+    )
+    await state.update_data(message_id=msg.message_id)
+
+
+@dp.callback_query(lambda F: F.data == 'six_months')
+async def six_months(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
+    msg = await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=message_id,
+        text='Подписка - 6 месяцев',
+        parse_mode='HTML',
+        reply_markup=InlineKeyboards.six_months()
+    )
+    await state.update_data(message_id=msg.message_id)
+
+
+@dp.callback_query(lambda F: F.data == 'help')
+async def get_help(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
+    msg = await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=message_id,
+        text='Для получения помощи напишите сюда ...',
+        parse_mode='HTML',
+        reply_markup=InlineKeyboards.back()
+    )
+    await state.update_data(message_id=msg.message_id)
 
 
 async def main():
     global controller
     token = await MarzbanController.api.get_token(username=os.getenv('MARZBAN_USERNAME'), password=os.getenv('MARZBAN_PASSWORD'))
     controller = MarzbanController.Controller(token)
+    logger.info('Бот начал работу')
     await dp.start_polling(bot)
 
 

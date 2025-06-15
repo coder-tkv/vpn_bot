@@ -43,7 +43,9 @@ def time_declination(n, unit):
 def time_left(total_seconds):
     if total_seconds is True:
         return 'У вас безлимит'
-    if total_seconds <= 0:
+    if total_seconds is None:
+        return 'Вам доступен пробный период'
+    if total_seconds < 0:
         return "Подписка закончилась"
 
     if total_seconds >= 86400:

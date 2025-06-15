@@ -106,7 +106,7 @@ class Controller:
 async def start():
     token = await api.get_token(username=os.getenv('MARZBAN_USERNAME'), password=os.getenv('MARZBAN_PASSWORD'))
     controller = Controller(token)
-    # await controller.add_user('test', 1)
+    # await controller.add_user('588895219', 1)
     # await controller.get_user('test')
     # print(await controller.get_connect('test'))
     # await controller.add_expire('test_time', 1)

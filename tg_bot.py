@@ -8,6 +8,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 import logger_config
+from MarzbanController import Controller
 from time_declination_funcs import time_left
 
 import InlineKeyboards
@@ -31,7 +32,7 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'start')
+@dp.callback_query(lambda f: f.data == 'start')
 async def start_edited(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -45,19 +46,28 @@ async def start_edited(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'status')
+@dp.callback_query(lambda f: f.data == 'status')
 async def status(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
     expire = await controller.get_expire(str(callback.from_user.id))
     text = time_left(expire)
-    if expire > 0 or expire is True:
+    if expire is None:
         msg = await callback.bot.edit_message_text(
             chat_id=callback.from_user.id,
             message_id=message_id,
             text=text,
             parse_mode='HTML',
-            reply_markup=InlineKeyboards.back()
+            reply_markup=InlineKeyboards.status()
+        )
+        await state.update_data(message_id=msg.message_id)
+    elif expire > 0:
+        msg = await callback.bot.edit_message_text(
+            chat_id=callback.from_user.id,
+            message_id=message_id,
+            text=text,
+            parse_mode='HTML',
+            reply_markup=InlineKeyboards.status()
         )
         await state.update_data(message_id=msg.message_id)
     else:
@@ -71,7 +81,7 @@ async def status(callback: CallbackQuery, state: FSMContext):
         await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'connect')
+@dp.callback_query(lambda f: f.data == 'connect')
 async def connect(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -97,7 +107,7 @@ async def connect(callback: CallbackQuery, state: FSMContext):
         await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'buy')
+@dp.callback_query(lambda f: f.data == 'buy')
 async def buy(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -111,7 +121,7 @@ async def buy(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'one_month')
+@dp.callback_query(lambda f: f.data == 'one_month')
 async def one_month(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -125,7 +135,7 @@ async def one_month(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'three_months')
+@dp.callback_query(lambda f: f.data == 'three_months')
 async def three_months(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -139,7 +149,7 @@ async def three_months(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'six_months')
+@dp.callback_query(lambda f: f.data == 'six_months')
 async def six_months(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -153,7 +163,7 @@ async def six_months(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'help')
+@dp.callback_query(lambda f: f.data == 'help')
 async def get_help(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -167,7 +177,7 @@ async def get_help(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
-@dp.callback_query(lambda F: F.data == 'payment_confirmed')
+@dp.callback_query(lambda f: f.data == 'payment_confirmed')
 async def payment_confirmed(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     message_id = data.get('message_id')
@@ -194,7 +204,7 @@ async def payment_confirmed(callback: CallbackQuery, state: FSMContext):
 async def main():
     global controller
     token = await MarzbanController.api.get_token(username=os.getenv('MARZBAN_USERNAME'), password=os.getenv('MARZBAN_PASSWORD'))
-    controller = MarzbanController.Controller(token)
+    controller: Controller = MarzbanController.Controller(token)
     root_logger.info('Бот начал работу')
     await dp.start_polling(bot)
 

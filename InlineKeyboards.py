@@ -9,6 +9,12 @@ def start():
     ]
     return InlineKeyboardMarkup(inline_keyboard=start_buttons_list)
 
+def status():
+    expired_buttons_list = [
+        [InlineKeyboardButton(text="Подключить", callback_data='connect')],
+        [InlineKeyboardButton(text="Назад", callback_data='start')]]
+    return InlineKeyboardMarkup(inline_keyboard=expired_buttons_list)
+
 def back():
     return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data='start')]])
 

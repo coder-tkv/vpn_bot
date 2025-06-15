@@ -167,6 +167,30 @@ async def get_help(callback: CallbackQuery, state: FSMContext):
     await state.update_data(message_id=msg.message_id)
 
 
+@dp.callback_query(lambda F: F.data == 'payment_confirmed')
+async def payment_confirmed(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('message_id')
+
+    expire = await controller.get_expire(str(callback.from_user.id))
+    if expire is True:
+        text = 'У вас безлимит'
+    elif expire > 0:
+        text = 'Оплата прошла успешно, вам добавлен 1 месяц'
+        await controller.add_expire(str(callback.from_user.id), 30)
+    else:
+        text = 'Оплата прошла успешно, вам выдан 1 месяц'
+        await controller.update_expire(str(callback.from_user.id), 30)
+    msg = await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=message_id,
+        text=text,
+        parse_mode='HTML',
+        reply_markup=InlineKeyboards.payment_confirmed()
+    )
+    await state.update_data(message_id=msg.message_id)
+
+
 async def main():
     global controller
     token = await MarzbanController.api.get_token(username=os.getenv('MARZBAN_USERNAME'), password=os.getenv('MARZBAN_PASSWORD'))

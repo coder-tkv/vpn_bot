@@ -15,12 +15,12 @@ def back():
 def to_connect():
     connect_buttons_list = [
         [
-            InlineKeyboardButton(text="Скачать Android", callback_data='download_android'),
-            InlineKeyboardButton(text="Подключить Android", callback_data='connect_android')
+            InlineKeyboardButton(text="Скачать Android", url='google.com'),
+            InlineKeyboardButton(text="Подключить Android", url='google.com')
         ],
         [
-            InlineKeyboardButton(text="Скачать iOS", callback_data='download_ios'),
-            InlineKeyboardButton(text="Подключить iOS", callback_data='connect_ios')
+            InlineKeyboardButton(text="Скачать iOS", url='google.com'),
+            InlineKeyboardButton(text="Подключить iOS", url='google.com')
         ],
         [
             InlineKeyboardButton(text="Назад", callback_data='start')
@@ -46,23 +46,30 @@ def buy():
 
 def one_month():
     one_month_buttons_list = [
-        [InlineKeyboardButton(text="Оплатить", callback_data='123')],
-        [InlineKeyboardButton(text="Криптой", callback_data='123')],
+        [InlineKeyboardButton(text="Оплатить", callback_data='payment_confirmed')],
+        [InlineKeyboardButton(text="Криптой", url='google.com')],
         [InlineKeyboardButton(text="Назад", callback_data='buy')]]
     return InlineKeyboardMarkup(inline_keyboard=one_month_buttons_list)
 
 
 def three_months():
     three_months_buttons_list = [
-        [InlineKeyboardButton(text="Оплатить", callback_data='123')],
-        [InlineKeyboardButton(text="Криптой", callback_data='123')],
+        [InlineKeyboardButton(text="Оплатить", url='google.com')],
+        [InlineKeyboardButton(text="Криптой", url='google.com')],
         [InlineKeyboardButton(text="Назад", callback_data='buy')]]
     return InlineKeyboardMarkup(inline_keyboard=three_months_buttons_list)
 
 
 def six_months():
     six_months_buttons_list = [
-        [InlineKeyboardButton(text="Оплатить", callback_data='123')],
-        [InlineKeyboardButton(text="Криптой", callback_data='123')],
+        [InlineKeyboardButton(text="Оплатить", url='google.com')],
+        [InlineKeyboardButton(text="Криптой", url='google.com')],
         [InlineKeyboardButton(text="Назад", callback_data='buy')]]
     return InlineKeyboardMarkup(inline_keyboard=six_months_buttons_list)
+
+def payment_confirmed():
+    payment_confirmed_buttons_list = [
+        [InlineKeyboardButton(text="Подключиться", callback_data='connect')],
+        [InlineKeyboardButton(text="Назад", callback_data='start')],
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=payment_confirmed_buttons_list)
